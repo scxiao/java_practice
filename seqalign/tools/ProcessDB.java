@@ -4,26 +4,34 @@ import java.io.FileReader;
 import java.io.InputStream;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
+import java.io.RandomAccessFile;
 import java.io.IOException;
 import java.io.Writer;
 import java.io.PrintWriter;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.nio.ByteBuffer;
+import java.util.Collections;
 import impl.ScoreMatrix;
 
-class SeqInfo {
-  int descrStartPos;
+class SeqInfo implements Comparable<SeqInfo> {
+  long offset;
   int descrSize;
   int seqSize;
 
-  public SeqInfo(int dPos, int dSize, int sSize) {
-    descrStartPos = dPos;
+  public SeqInfo(long dPos, int dSize, int sSize) {
+    offset = dPos;
     descrSize = dSize;
     seqSize = sSize;
+  }
+
+  public int compareTo(SeqInfo si) {
+    int size = si.seqSize;
+    return size - this.seqSize;
   }
 }
 
 public class ProcessDB {
+
   public static void main(String[] args) throws IOException {
     if (args.length != 2) {
       System.out.println("Usage: java ProcessDB dbname read(0)/format(1)");
@@ -45,11 +53,9 @@ public class ProcessDB {
     if (flag == 1) { // format DB
       try {
         // Open input file
-        int offset = 0;
-        Vector<SeqInfo> seqInfoVec = new Vector<SeqInfo>();
+        ArrayList<SeqInfo> seqInfoList = new ArrayList<SeqInfo>();
         File seqFile = new File(args[0]);
-        fr = new FileReader(seqFile);
-        br = new BufferedReader(fr);
+        RandomAccessFile raf = new RandomAccessFile(seqFile, "r");
 
         // open output file
         File locFile = new File(locFileName);
@@ -60,37 +66,50 @@ public class ProcessDB {
 
         String line;
         int seqIndex = 0;
-        while ((line = br.readLine()) != null) {
+        while ((line = raf.readLine()) != null) {
           char tmp = line.charAt(0);
           if (tmp == '>') {
             int descrpSize = line.length();
-            String seq = br.readLine();
+            long offset = raf.getFilePointer();
+            String seq = raf.readLine();
             if (seq == null) {
               continue;
             }
             int seqSize = seq.length();
 
             SeqInfo info = new SeqInfo(offset, descrpSize, seqSize);
-            seqInfoVec.addElement(info);
-
-            char[] seqArray = seq.toCharArray();
-            sm.encoding(seqArray);
-            byte[] seqByteArray = new byte[seqArray.length];
-            for (int i = 0; i < seqArray.length; i++) {
-              seqByteArray[i] = (byte)seqArray[i];
-            }
-
-            System.out.println("seqIndex = " + seqIndex++);
-
-            // Write info to the output file
-            byte[] sizeByte = ByteBuffer.allocate(4).putInt(seqSize).array();
-
-            // Write size to the loc file
-            locFs.write(sizeByte);
-
-            // Write seq to the data file
-            dataFs.write(seqByteArray);
+            seqInfoList.add(info);
           }
+        }
+
+        // Sort all the sequences according to their size
+        // from longest to shortest
+        Collections.sort(seqInfoList);
+
+        int i;
+        for (i = 0; i < seqInfoList.size(); i++) {
+          System.out.println("SeqIndex = " + i);
+          SeqInfo si = seqInfoList.get(i);
+          // Seek to the correct position
+          raf.seek(si.offset);
+          String seq = raf.readLine();
+
+          char[] seqArray = seq.toCharArray();
+          sm.encoding(seqArray);
+          byte[] seqByteArray = new byte[seqArray.length];
+          for (int j = 0; j < seqArray.length; j++) {
+            seqByteArray[j] = (byte)seqArray[j];
+          }
+
+
+          // Write info to the output file
+          byte[] sizeByte = ByteBuffer.allocate(4).putInt(si.seqSize).array();
+
+          // Write size to the loc file
+          locFs.write(sizeByte);
+
+          // Write seq to the data file
+          dataFs.write(seqByteArray);
         }
       }
       finally {
