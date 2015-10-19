@@ -6,7 +6,8 @@ JC = javac
 
 CLASSES = \
 	ScoreMatrix.java \
-	ProcessDB.java
+	ProcessDB.java \
+	GenSequence.java
 
 default: classes
 

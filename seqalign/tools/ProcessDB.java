@@ -96,11 +96,9 @@ public class ProcessDB {
 
           char[] seqArray = seq.toCharArray();
           sm.encoding(seqArray);
-          byte[] seqByteArray = new byte[seqArray.length];
-          for (int j = 0; j < seqArray.length; j++) {
-            seqByteArray[j] = (byte)seqArray[j];
-          }
 
+          String seqTmp = new String(seqArray);
+          byte[] seqByteArray = seqTmp.getBytes();
 
           // Write info to the output file
           byte[] sizeByte = ByteBuffer.allocate(4).putInt(si.seqSize).array();
