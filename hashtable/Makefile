@@ -5,11 +5,7 @@ JC = javac
 	$(JC) $(JFLAGS) $*.java
 
 CLASSES = \
-	MyLinkedList.java \
-	MyStack.java \
-	MyHashTable.java \
-	TestBox.java \
-	TestMyStack.java
+	MyHashTable.java
 
 default: classes
 

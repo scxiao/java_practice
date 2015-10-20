@@ -1,15 +1,18 @@
-JFLAGS = -g -d .
+JFLAGS = -g
 JC = javac
 .SUFFIXES: .java .class
 .java.class:
 	$(JC) $(JFLAGS) $*.java
 
 CLASSES = \
-	MyLinkedList.java \
-	MyStack.java \
-	MyHashTable.java \
-	TestBox.java \
-	TestMyStack.java
+	EnumeratorTester.java \
+	GenQueue.java \
+	GetKthNum.java \
+	InputStreamDemo.java \
+	IteratorDemo.java \
+	ReadDir.java \
+	TestSort.java \
+	TestStringByte.java
 
 default: classes
 
@@ -17,4 +20,5 @@ classes: $(CLASSES:.java=.class)
 
 clean:
 	$(RM) *.class impl/*.class
+
 

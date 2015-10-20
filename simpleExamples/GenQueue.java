@@ -11,6 +11,8 @@ class GenQueue<E> {
     list.addLast(item);
   }
 
-  public E back() {
-    
+  public void back() {
+    return;
   }
+}
+
