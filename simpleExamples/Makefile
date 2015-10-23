@@ -12,7 +12,12 @@ CLASSES = \
 	IteratorDemo.java \
 	ReadDir.java \
 	TestSort.java \
-	TestStringByte.java
+	TestStringByte.java \
+	MultiThread1.java \
+	MultiThread2.java \
+	DisplayMessage.java \
+	GuessANumber.java \
+	ThreadClassDemo.java
 
 default: classes
 
