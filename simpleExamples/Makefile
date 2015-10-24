@@ -1,4 +1,4 @@
-JFLAGS = -g
+JFLAGS = -g -d .
 JC = javac
 .SUFFIXES: .java .class
 .java.class:
@@ -17,7 +17,11 @@ CLASSES = \
 	MultiThread2.java \
 	DisplayMessage.java \
 	GuessANumber.java \
-	ThreadClassDemo.java
+	ThreadClassDemo.java \
+	Student.java \
+	Undergraduate.java \
+	Graduate.java \
+	TestStudent.java
 
 default: classes
 
