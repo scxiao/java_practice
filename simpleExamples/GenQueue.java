@@ -1,6 +1,8 @@
+package impl;
+
 import java.util.LinkedList;
 
-class GenQueue<E> {
+public class GenQueue<E> implements java.io.Serializable {
   private LinkedList<E> list;
 
   public GenQueue() {
@@ -11,8 +13,24 @@ class GenQueue<E> {
     list.addLast(item);
   }
 
-  public void back() {
-    return;
+  public void pop() {
+    list.poll();
+  }
+
+  public E front() {
+    return list.peek();
+  }
+
+  public E back() {
+    return list.peekLast();
+  }
+
+  public int size() {
+    return list.size();
+  }
+
+  public boolean isEmpty() {
+    return list.isEmpty();
   }
 }
 

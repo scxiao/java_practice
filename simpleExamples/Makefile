@@ -21,7 +21,9 @@ CLASSES = \
 	Student.java \
 	Undergraduate.java \
 	Graduate.java \
-	TestStudent.java
+	TestStudent.java \
+	SerializeDemo.java \
+	TestQueue.java
 
 default: classes
 

@@ -57,13 +57,32 @@ public class ScoreMatrix {
   public char amino_acids[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N',
                         'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z', '-'};
 
-  public void encoding(char[] seq) {
+  public int encoding(char[] seq) {
     int i;
+    int outIndex = 0;
     for (i = 0; i < seq.length; i++) {
-      seq[i] = char2Index(seq[i]);
+      char c = char2Index(seq[i]);
+      if (c != -1) {
+        seq[outIndex] = char2Index(seq[i]);
+        outIndex++;
+      }
     }
 
-    return;
+    return outIndex;
+  }
+
+  public int encoding(byte[] seq) {
+    int i;
+    int outIndex = 0;
+    for (i = 0; i < seq.length; i++) {
+      byte c = (byte)char2Index((char)seq[i]);
+      if (c != -1) {
+        seq[outIndex] = c;
+        outIndex++;
+      }
+    }
+
+    return outIndex;
   }
 
   private char char2Index(char c) {

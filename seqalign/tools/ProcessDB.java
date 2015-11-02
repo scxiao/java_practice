@@ -65,22 +65,30 @@ public class ProcessDB {
         dataFs = new FileOutputStream(dataFile);
 
         String line;
-        int seqIndex = 0;
+        int seqIndex = -1;
+        int seqSize = 0;
+        int descrpSize = 0;
+        long offset = 0;
         while ((line = raf.readLine()) != null) {
           char tmp = line.charAt(0);
           if (tmp == '>') {
-            int descrpSize = line.length();
-            long offset = raf.getFilePointer();
-            String seq = raf.readLine();
-            if (seq == null) {
-              continue;
+            seqIndex++;
+            if (seqIndex > 0) {
+              SeqInfo info = new SeqInfo(offset, descrpSize, seqSize);
+              seqInfoList.add(info);
+              seqSize = -1;
             }
-            int seqSize = seq.length();
-
-            SeqInfo info = new SeqInfo(offset, descrpSize, seqSize);
-            seqInfoList.add(info);
+            descrpSize = line.length();
+            offset = raf.getFilePointer();
+          }
+          else {
+            seqSize += line.length() + 1;
           }
         }
+
+        // last sequence
+        SeqInfo info = new SeqInfo(offset, descrpSize, seqSize);
+        seqInfoList.add(info);
 
         // Sort all the sequences according to their size
         // from longest to shortest
@@ -88,26 +96,24 @@ public class ProcessDB {
 
         int i;
         for (i = 0; i < seqInfoList.size(); i++) {
-          System.out.println("SeqIndex = " + i);
           SeqInfo si = seqInfoList.get(i);
+          System.out.println("offset = " + si.offset + " dscrpSize = " + si.descrSize + " seqSize = " + si.seqSize);
           // Seek to the correct position
           raf.seek(si.offset);
-          String seq = raf.readLine();
+          byte[] seq = new byte[si.seqSize];
+          raf.read(seq, 0, si.seqSize);
+          String seqStr = new String(seq);
 
-          char[] seqArray = seq.toCharArray();
-          sm.encoding(seqArray);
-
-          String seqTmp = new String(seqArray);
-          byte[] seqByteArray = seqTmp.getBytes();
+          seqSize = sm.encoding(seq);
 
           // Write info to the output file
-          byte[] sizeByte = ByteBuffer.allocate(4).putInt(si.seqSize).array();
+          byte[] sizeByte = ByteBuffer.allocate(4).putInt(seqSize).array();
 
           // Write size to the loc file
           locFs.write(sizeByte);
 
           // Write seq to the data file
-          dataFs.write(seqByteArray);
+          dataFs.write(seq, 0, seqSize);
         }
       }
       finally {

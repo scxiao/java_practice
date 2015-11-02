@@ -1,9 +1,13 @@
 package impl;
 import impl.Student;
 
-public class Graduate extends Student {
+public class Graduate extends Student implements java.io.Serializable {
   int credits;
   int tuition;
+
+  public Graduate() {
+    super("temp", 0);
+  }
 
   public Graduate(String name, int age) {
     super(name, age);
