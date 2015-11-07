@@ -22,9 +22,11 @@ public class Alignment {
   char traceBackFlag[];
   float maxScore[], hGapScore[], vGapScore[];
   int outLen;
-  MatchInfo matchInfo;
+  MatchInfo[] matchInfo;
   ScoreMatrix scoreMatrix;
   int rowNum, columnNum;
+  int threadNum;
+  int maxScoreIndex;
 
   public static final char PATH_END = 0;
 
@@ -34,9 +36,26 @@ public class Alignment {
     maxScore = hGapScore = vGapScore = null;
     traceBackFlag = null;
     rowNum = columnNum = 0;
-    matchInfo = new MatchInfo();
     scoreMatrix = new ScoreMatrix();
     outLen = 0;
+    threadNum = 1;
+    matchInfo = new MatchInfo[1];
+    matchInfo[0] = new MatchInfo();
+  }
+
+  public Alignment(int tNum) {
+    seq1 = seq2 = null;
+    scoreMatrix = null;
+    maxScore = hGapScore = vGapScore = null;
+    traceBackFlag = null;
+    rowNum = columnNum = 0;
+    scoreMatrix = new ScoreMatrix();
+    outLen = 0;
+    threadNum = tNum;
+    matchInfo = new MatchInfo[threadNum];
+    for (int i = 0; i < threadNum; i++) {
+      matchInfo[i] = new MatchInfo();
+    }
   }
 
   public void setSequences(char[] s1, char[] s2) {
@@ -78,12 +97,111 @@ public class Alignment {
   }
 
   public void matchString(float openGapPenalty,
-                          float extGapPenalty) {
+                          float extGapPenalty,
+                          int tileSize) {
     // rowNum >= columnNum;
+    int i, j;
+    ThreadForMatchString[] t = new ThreadForMatchString[threadNum];
+    for (i = 1, j = 1; (i < rowNum && j < columnNum); ) {
+      int tid;
+      for (tid = 0; tid < threadNum; tid++) {
+        t[tid] = new ThreadForMatchString(this, openGapPenalty,
+                                         extGapPenalty, i, j,
+                                         rowNum, columnNum,
+                                         tileSize, tid, threadNum);
+        t[tid].start();
+      }
+
+      for (tid = 0; tid < threadNum; tid++) {
+        t[tid].joinT();
+      }
+
+      if (i + tileSize < rowNum) {
+        i += tileSize;
+      }
+      else {
+        j += tileSize;
+      }
+    }
+  }
+
+  class ThreadForMatchString extends Thread {
+    private Alignment alignor;
+    private float openGapPenalty;
+    private float extGapPenalty;
+    private int rowLocation, columnLocation;
+    private int rowNum, columnNum;
+    private int tileSize;
+    private int threadIndex, threadNum;
+    private Thread t;
+
+    ThreadForMatchString(Alignment alig,
+                         float op,
+                         float ep,
+                         int rowLoc,
+                         int columnLoc,
+                         int rNum,
+                         int cNum,
+                         int tSize,
+                         int tid,
+                         int tNum) {
+      alignor = alig;
+      rowLocation = rowLoc;
+      columnLocation = columnLoc;
+      rowNum = rNum;
+      columnNum = cNum;
+      tileSize = tSize;
+      threadIndex = tid;
+      threadNum = tNum;
+      openGapPenalty = op;
+      extGapPenalty = ep;
+    }
+
+    public void run() {
+      int stepSize = tileSize * threadNum;
+      int rowLoc = rowLocation - threadIndex * tileSize;
+      int columnLoc = columnLocation + threadIndex * tileSize;
+      for (; (rowLoc > 0 && columnLoc < columnNum);
+          rowLoc -= stepSize, columnLoc += stepSize) {
+        alignor.matchStringTile(openGapPenalty,
+                                extGapPenalty,
+                                rowLoc,
+                                columnLoc,
+                                tileSize,
+                                threadIndex);
+      }
+    }
+
+    public void start() {
+      t = new Thread(this);
+      t.start();
+    }
+
+    public void joinT() {
+      try {
+        t.join();
+      }
+      catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  void matchStringTile(float openGapPenalty,
+                       float extGapPenalty,
+                       int rowLoc,
+                       int columnLoc,
+                       int tileSize,
+                       int tid) {
+    // rowNum >= columnNum;
+    int startRowLoc = rowLoc;
+    int endRowLoc = (rowLoc + tileSize < rowNum) ? rowLoc + tileSize : rowNum;
+    int startColumnLoc = columnLoc;;
+    int endColumnLoc = (columnLoc + tileSize < columnNum) ? columnLoc + tileSize : columnNum;
     int i, j, pos;
     float maxDist, dist, nGapDist, hGapDist, vGapDist, extDist;
-    for (i = 1; i < rowNum; i++) {
-      for (j = 1; j < columnNum; j++) {
+    for (i = startRowLoc; i < endRowLoc; i++) {
+      for (j = startColumnLoc; j < endColumnLoc; j++) {
         pos = (i - 1) * columnNum + j - 1;
         maxDist = maxScore[pos];
         dist = (float)scoreMatrix.blosum62[seq1[i - 1]][seq2[j - 1]];
@@ -132,30 +250,40 @@ public class Alignment {
           traceBackFlag[pos] = PATH_END;
         }
 
-        if (matchInfo.maxScore < maxDist) {
-          matchInfo.rowPos = i;
-          matchInfo.columnPos = j;
-          matchInfo.maxPos = pos;
-          matchInfo.maxScore = maxDist;
+        if (matchInfo[tid].maxScore < maxDist) {
+          matchInfo[tid].rowPos = i;
+          matchInfo[tid].columnPos = j;
+          matchInfo[tid].maxPos = pos;
+          matchInfo[tid].maxScore = maxDist;
         }
       }
     }
   }
 
+
   public void printMaxMatchInfo() {
-    System.out.format("\tnposi = %d\n", matchInfo.rowPos);
-    System.out.format("\tnposj = %d\n", matchInfo.columnPos);
-    System.out.format("\tnmaxPos = %d\n", matchInfo.maxPos);
-    System.out.format("\tmaxCore = %.1f\n", matchInfo.maxScore);
+    int index = maxScoreIndex;
+    System.out.format("\tnposi = %d\n", matchInfo[index].rowPos);
+    System.out.format("\tnposj = %d\n", matchInfo[index].columnPos);
+    System.out.format("\tnmaxPos = %d\n", matchInfo[index].maxPos);
+    System.out.format("\tmaxCore = %.1f\n", matchInfo[index].maxScore);
   }
 
   public void traceBack() {
     int i, j, pos;
     int pathFlag;
+    maxScoreIndex = 0;
+    float maxScore = matchInfo[0].maxScore;
+    for (i = 1; i < threadNum; i++) {
+      if (maxScore < matchInfo[i].maxScore) {
+        maxScore = matchInfo[i].maxScore;
+        maxScoreIndex = i;
+      }
+    }
 
-    i = matchInfo.rowPos;
-    j = matchInfo.columnPos;
-    pos = matchInfo.maxPos;
+    i = matchInfo[maxScoreIndex].rowPos;
+    j = matchInfo[maxScoreIndex].columnPos;
+    pos = matchInfo[maxScoreIndex].maxPos;
     pathFlag = (int)traceBackFlag[pos] & 0x3;
     outLen = 0;
     while (Boolean.TRUE) {
@@ -223,7 +351,7 @@ public class Alignment {
       j--;
     }
 
-    matchInfo.outLen = outLen;
+    matchInfo[maxScoreIndex].outLen = outLen;
 
     return;
   }
@@ -348,3 +476,4 @@ public class Alignment {
     return;
   }
 }
+
