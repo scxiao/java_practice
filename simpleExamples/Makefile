@@ -23,7 +23,10 @@ CLASSES = \
 	Graduate.java \
 	TestStudent.java \
 	SerializeDemo.java \
-	TestQueue.java
+	TestQueue.java \
+	TestThread.java \
+	TestWaitNotify.java \
+	TestThread1.java
 
 default: classes
 
