@@ -25,8 +25,9 @@ CLASSES = \
 	SerializeDemo.java \
 	TestQueue.java \
 	TestThread.java \
+	TestThread1.java \
 	TestWaitNotify.java \
-	TestThread1.java
+	TestBarrier.java
 
 default: classes
 

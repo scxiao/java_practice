@@ -9,7 +9,7 @@ class Counter extends Thread {
     threadName = name;
   }
 
-  public void run() {
+  public synchronized void run() {
     if (threadNo == 0) {
       try {
       System.out.println("Wait on notify ...");
