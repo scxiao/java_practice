@@ -6,6 +6,7 @@ all:
 	cd seqalign/tools; make
 	cd simpleExamples; make
 	cd multithread; make
+	cd designPattern; make
 
 clean:
 	cd binarytree; make clean
@@ -15,4 +16,5 @@ clean:
 	cd seqalign/tools; make clean
 	cd simpleExamples; make clean
 	cd multithread; make clean
+	cd designPattern; make clean
 
