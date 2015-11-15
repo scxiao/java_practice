@@ -28,4 +28,4 @@ clean:
 
 test:
 	java BuilderPatternDemo
-
+	echo "";

@@ -5,8 +5,15 @@ JC = javac
 	$(JC) $(JFLAGS) $*.java
 
 CLASSES = \
-	Singleton.java \
-	TestSingleton.java
+	Person.java \
+	Criteria.java \
+	CriteriaFemale.java \
+	CriteriaMale.java \
+	CriteriaSingle.java \
+	AndCriteria.java \
+	OrCriteria.java \
+	CriteriaPatternDemo.java
+
 
 default: classes
 
@@ -16,5 +23,6 @@ clean:
 	$(RM) *.class ./impl/*.class
 
 test:
-	java TestSingleton
+	java CriteriaPatternDemo
 	echo "";
+

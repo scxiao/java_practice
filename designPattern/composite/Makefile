@@ -5,8 +5,8 @@ JC = javac
 	$(JC) $(JFLAGS) $*.java
 
 CLASSES = \
-	Singleton.java \
-	TestSingleton.java
+	Employee.java \
+	CompositePatternDemo.java
 
 default: classes
 
@@ -16,5 +16,5 @@ clean:
 	$(RM) *.class ./impl/*.class
 
 test:
-	java TestSingleton
+	java CompositePatternDemo
 	echo "";

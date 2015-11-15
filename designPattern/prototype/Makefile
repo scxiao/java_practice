@@ -21,4 +21,4 @@ clean:
 
 test:
 	java PrototypePatternDemo
-
+	echo "";

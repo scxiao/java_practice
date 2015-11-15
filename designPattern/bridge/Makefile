@@ -5,8 +5,13 @@ JC = javac
 	$(JC) $(JFLAGS) $*.java
 
 CLASSES = \
-	Singleton.java \
-	TestSingleton.java
+	DrawAPI.java \
+	RedCircle.java \
+	GreenCircle.java \
+	Shape.java \
+	Circle.java \
+	BridgePatternDemo.java
+
 
 default: classes
 
@@ -16,5 +21,5 @@ clean:
 	$(RM) *.class ./impl/*.class
 
 test:
-	java TestSingleton
+	java BridgePatternDemo
 	echo "";

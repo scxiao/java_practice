@@ -30,4 +30,4 @@ test:
 	java TestShape
 	echo "";
 	java FactoryPatternDemo
-
+	echo "";

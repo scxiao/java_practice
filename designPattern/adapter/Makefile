@@ -22,5 +22,5 @@ clean:
 
 test:
 	java AdapterPatternDemo
-
+	echo ""
 
