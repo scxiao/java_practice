@@ -6,7 +6,7 @@ public class IteratorPatternDemo {
     NameRepository nr = new NameRepository();
     Iterator iter;
     for (iter = nr.getIterator(); iter.hasNext(); ) {
-      String name = (String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)(String)iter.next();
+      String name = (String)iter.next();
       System.out.println("Name : " + name);
     }
   }

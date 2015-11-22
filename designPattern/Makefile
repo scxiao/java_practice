@@ -15,6 +15,8 @@ all:
 	cd command; make
 	cd interpreter; make
 	cd iterator; make
+	cd mediator; make
+	cd memento; make
 
 clean:
 	cd adapter; make clean
@@ -33,6 +35,8 @@ clean:
 	cd command; make clean
 	cd interpreter; make clean
 	cd iterator; make clean
+	cd mediator; make clean
+	cd memento; make clean
 
 test:
 	cd adapter; make test
@@ -51,4 +55,6 @@ test:
 	cd command; make test
 	cd interpreter; make test
 	cd iterator; make test
+	cd mediator; make test
+	cd memento; make test
 
