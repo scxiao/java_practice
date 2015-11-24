@@ -17,6 +17,8 @@ all:
 	cd iterator; make
 	cd mediator; make
 	cd memento; make
+	cd null; make
+	cd strategy; make
 
 clean:
 	cd adapter; make clean
@@ -37,6 +39,8 @@ clean:
 	cd iterator; make clean
 	cd mediator; make clean
 	cd memento; make clean
+	cd null; make clean
+	cd strategy; make clean
 
 test:
 	cd adapter; make test
@@ -57,4 +61,6 @@ test:
 	cd iterator; make test
 	cd mediator; make test
 	cd memento; make test
+	cd null; make test
+	cd strategy; make test
 
