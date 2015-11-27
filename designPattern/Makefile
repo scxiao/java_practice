@@ -19,6 +19,15 @@ all:
 	cd memento; make
 	cd null; make
 	cd strategy; make
+	cd compositeentity; make
+	cd dao; make
+	cd frontcontroller; make
+	cd template; make
+	cd visitor; make
+	cd mvc; make
+	cd businessdelegate; make
+
+
 
 clean:
 	cd adapter; make clean
@@ -41,6 +50,13 @@ clean:
 	cd memento; make clean
 	cd null; make clean
 	cd strategy; make clean
+	cd compositeentity; make clean
+	cd dao; make clean
+	cd frontcontroller; make clean
+	cd template; make clean
+	cd visitor; make clean
+	cd mvc; make clean
+	cd businessdelegate; make clean
 
 test:
 	cd adapter; make test
@@ -63,4 +79,11 @@ test:
 	cd memento; make test
 	cd null; make test
 	cd strategy; make test
+	cd compositeentity; make test
+	cd dao; make test
+	cd frontcontroller; make test
+	cd template; make test
+	cd visitor; make test
+	cd mvc; make test
+	cd businessdelegate; make test
 
