@@ -26,6 +26,9 @@ all:
 	cd visitor; make
 	cd mvc; make
 	cd businessdelegate; make
+	cd interceptfilter; make
+	cd servicelocator; make
+	cd transferObject; make
 
 
 
@@ -57,6 +60,9 @@ clean:
 	cd visitor; make clean
 	cd mvc; make clean
 	cd businessdelegate; make clean
+	cd interceptfilter; make clean
+	cd servicelocator; make clean
+	cd transferObject; make clean
 
 test:
 	cd adapter; make test
@@ -86,4 +92,7 @@ test:
 	cd visitor; make test
 	cd mvc; make test
 	cd businessdelegate; make test
+	cd interceptfilter; make test
+	cd servicelocator; make test
+	cd transferObject; make test
 
