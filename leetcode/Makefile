@@ -6,7 +6,12 @@ JC = javac
 
 CLASSES = \
 	TestPalindrome.java \
-	TestGetKthNum.java
+	TestGetKthNum.java \
+	TestDataCheck.java \
+	TestReverseWords.java \
+	TestMaxPointsOnLine.java \
+	TestSetColor.java
+
 
 default: classes
 
